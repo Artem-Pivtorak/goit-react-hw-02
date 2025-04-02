@@ -1,15 +1,21 @@
 import { useState, useEffect } from "react";
+import Description from "./components/Description/Description.jsx";
 import Feedback from "./components/Feedback/Feedback.jsx";
 import Options from "./components/Options/Options.jsx";
 import Notification from "./components/Notification/Notification.jsx";
 import styles from "./App.module.css";
 
 export default function App() {
-  const [feedback, setFeedback] = useState({
-    good: 0,
-    neutral: 0,
-    bad: 0,
+  const [feedback, setFeedback] = useState(() => {
+    // 1️⃣ Завантажуємо з localStorage
+    const savedFeedback = localStorage.getItem("feedback");
+    return savedFeedback ? JSON.parse(savedFeedback) : { good: 0, neutral: 0, bad: 0 };
   });
+
+  // 2️⃣ Зберігаємо в localStorage при кожній зміні feedback
+  useEffect(() => {
+    localStorage.setItem("feedback", JSON.stringify(feedback));
+  }, [feedback]);
 
   const updateFeedback = (feedbackType) => {
     setFeedback((prevFeedback) => ({
@@ -27,8 +33,7 @@ export default function App() {
 
   return (
     <div className={styles.app}>
-      <h1>Sip Happens Café</h1>
-      <p>Please leave your feedback about our service by selecting one of the options below.</p>
+      <Description />
 
       <Options updateFeedback={updateFeedback} resetFeedback={resetFeedback} totalFeedback={totalFeedback} />
 
